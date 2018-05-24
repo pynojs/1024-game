@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>1024</title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="css/1024-2.css" />
+	<script type="text/javascript" src="./js/react.js"></script>
+	<script type="text/javascript" src="./js/react-dom.js"></script>
+	<script type="text/javascript" src="./js/babel.min.js"></script>
+</head>
+
+<body>
+	<h1 class="title">1024</h1>
+	<div id="root"></div>
+</body>
+<script type="text/babel">
+	
+	var data = [
+		{x:0,y:0,data:0},
+		{x:0,y:1,data:0},
+		{x:0,y:2,data:0},
+		{x:0,y:3,data:0},
+		{x:1,y:0,data:0},
+		{x:1,y:1,data:0},
+		{x:1,y:2,data:2},
+		{x:1,y:3,data:0},
+		{x:2,y:0,data:0},
+		{x:2,y:1,data:0},
+		{x:2,y:2,data:4},
+		{x:2,y:3,data:0},
+		{x:3,y:0,data:0},
+		{x:3,y:1,data:0},
+		{x:3,y:2,data:0},
+		{x:3,y:3,data:0}
+	];
+
+	class Game extends React.Component {
+		constructor(props) {
+			super(props)
+			this.state = {
+				data: data
+			}
+		}
+		render() {
+			return <div>{
+				this.state.data.map((perData,index) => {
+					return <span key={index} className={perData.data==0?'layer':'layer active-layer'} style={{top: perData.x * 80,left: perData.y * 80}}>{perData.data}</span>
+				})}
+			</div>
+		}
+
+		componentDidMount() {
+			document.addEventListener("keyup",(event) => {
+				switch(event.keyCode) {
+					case 37: 
+						var newData = moveLeft(this.state.data);
+						this.setState({
+							data: getRandomNumber(newData)
+						});
+						break;
+					case 38: 
+						var newData = moveUp(this.state.data);
+						this.setState({
+							data: getRandomNumber(newData)
+						});
+						break;
+					case 39: 
+						var newData = moveRight(this.state.data);
+						this.setState({
+							data: getRandomNumber(newData)
+						});
+						break;
+					case 40: 
+						var newData = moveDown(this.state.data);
+						this.setState({
+							data: getRandomNumber(newData)
+						});
+						break;
+				}
+			});
+		}
+	}
+
+	ReactDOM.render(
+		<Game />,
+		document.getElementById("root")
+	);
+
+	//生成随机数2或4
+	function getRandomNumber(data) {
+		var newNumber = Math.random()<0.5 ? 2 :4;
+		var location = Math.floor(Math.random()*16);
+		if(data[location].data == 0) {
+			data[location].data = newNumber;
+			return data;
+		} else {
+			return getRandomNumber(data);
+		}
+	}
+	
+	//左移动
+	function moveLeft(data) {
+		var dataTemp = data;
+		for(var i=0;i<16;i++) {
+			dataTemp = canMoveLeft(dataTemp,i);
+		}
+		return dataTemp;
+	}
+	//上移动
+	function moveUp(data) {
+		var dataTemp = data;
+		for(var i=0;i<16;i++) {
+			dataTemp = canMoveUp(dataTemp,i);
+
+		}
+		return dataTemp;
+	}
+	//右移动
+	function moveRight(data) {
+		var dataTemp = data;
+		for(var i=15;i>=0;i--) {
+			dataTemp = canMoveRight(dataTemp,i);
+		}
+		return dataTemp;
+	}
+	//下移动
+	function moveDown(data) {
+		var dataTemp = data;
+		for(var i=15;i>=0;i--) {
+			dataTemp = canMoveDown(dataTemp,i);
+		}
+		return dataTemp;
+	}
+	//判断能否左移
+	function canMoveLeft(data,i) {
+		while(data[i].y>0 && data[i].data!=0) {
+			if(data[i-1].data == 0) {
+				data[i-1].data+=data[i].data;
+				data[i].data = 0;
+				i--;
+				continue;
+			}
+			if(data[i-1].data == data[i].data && data[i-1].data!=0) {
+				data[i-1].data+=data[i].data;
+				data[i].data = 0;
+				break; 
+			}
+			else {
+				break;
+			}
+		}
+		return data;
+	}
+	//判断能否右移
+	function canMoveRight(data,i) {
+		while(data[i].y<3 && data[i].data!=0) {
+			if(data[i+1].data == 0) {
+				data[i+1].data = data[i].data;
+				data[i].data = 0;
+				i++;
+				continue;
+			}
+			if(data[i+1].data == data[i].data && data[i+1].data!=0) {
+				data[i+1].data+=data[i].data;
+				data[i].data = 0;
+				break;
+			}
+			else {
+				break;
+			}
+		}
+		return data;
+	}
+	//判断能否上移
+	function canMoveUp(data,i) {
+		while(data[i].x>0 && data[i].data!=0) {
+			if(data[i-4].data == 0) {
+				data[i-4].data = data[i].data;
+				data[i].data = 0;
+				i-=4;
+				continue;
+			}
+			if(data[i-4].data == data[i].data && data[i-4].data!=0) {
+				data[i-4].data+=data[i].data;
+				data[i].data = 0;
+				break;
+			}
+			else {
+				break;
+			}
+		}
+		return data;
+	}
+	//判断能否下移
+	function canMoveDown(data,i) {
+		while(data[i].x<3 && data[i].data!=0) {
+			if(data[i+4].data == 0) {
+				data[i+4].data = data[i].data;
+				data[i].data = 0;
+				i+=4;
+				continue;
+			}
+			if(data[i+4].data == data[i].data && data[i+4].data!=0) {
+				data[i+4].data+=data[i].data;
+				data[i].data = 0;
+				break;
+			}
+			else {
+				break;
+			}
+		}
+		return data;
+	}
+
+	
+</script>
+
+</html>
