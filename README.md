@@ -9,6 +9,5 @@ js/react/less/gulp
 每次移动后将在空的方格中随机生成一个2或4。<br>
 
 ### 安装环境
-需要安装nodejs.<br>
-this is a test.
+需要安装nodejs.
 
